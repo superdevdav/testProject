@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -7,9 +8,9 @@ using System.Threading.Tasks;
 using RestSharp;
 using TestHQ;
 
-namespace ConnectorTest
+namespace Connector
 {
-    public class TestConnector : ITestConnector
+    public class ConnectorRestClient : ITestConnector
     {
         public async Task<IEnumerable<Trade>> GetNewTradesAsync(
             string pair,
@@ -21,14 +22,26 @@ namespace ConnectorTest
             var request = new RestRequest("");
             request.AddHeader("accept", "application/json");
             var response = await client.GetAsync(request);
-            return JsonSerializer.Deserialize<IEnumerable<Trade>>(response.Content);
+            var tradesArray = JsonSerializer.Deserialize<List<List<JsonElement>>>(response.Content);
+
+            IEnumerable<Trade> result = tradesArray.Select(t => new Trade
+            {
+                Id = t[0].GetRawText(),
+                Time = DateTimeOffset.FromUnixTimeMilliseconds(t[1].GetInt64()),
+                Amount = t[2].GetDecimal(),
+                Price = t[3].GetDecimal(),
+                Side = t[2].GetDecimal() > 0 ? "buy" : "sell",
+                Pair = pair
+            }).ToList();
+
+            return result;
         }
 
         public async Task<IEnumerable<Candle>> GetCandleSeriesAsync(
-            string pair, 
-            int periodInSec, 
-            DateTimeOffset? from, 
-            DateTimeOffset? to = null, 
+            string pair,
+            int periodInSec,
+            DateTimeOffset? from,
+            DateTimeOffset? to = null,
             long? count = 0
             )
         {
@@ -63,7 +76,7 @@ namespace ConnectorTest
             }
         }
 
-        public event Action<Trade> NewSellTrade 
+        public event Action<Trade> NewSellTrade
         {
             add
             {
@@ -76,7 +89,7 @@ namespace ConnectorTest
             }
         }
 
-        public event Action<Candle> CandleSeriesProcessing 
+        public event Action<Candle> CandleSeriesProcessing
         {
             add
             {

@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using TestHQ;
 
-namespace ConnectorTest
+namespace Connector
 {
     interface ITestConnector
     {
