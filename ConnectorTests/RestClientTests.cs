@@ -26,5 +26,15 @@ namespace ConnectorTests
             Assert.NotNull(candles);
             Assert.True(candles.Any());
         }
+
+        [Fact]
+        public async Task GetTickerAsync()
+        {
+            var client = new ConnectorRestClient();
+            var ticker = await client.GetTickerAsync("BTCUSD");
+
+            Assert.NotNull(ticker);
+            Assert.Equal("BTCUSD", ticker.Pair);
+        }
     }
 }

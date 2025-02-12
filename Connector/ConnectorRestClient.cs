@@ -76,7 +76,25 @@ namespace Connector
             var request = new RestRequest("");
             request.AddHeader("accept", "application/json");
             var response = await client.GetAsync(request);
-            return JsonSerializer.Deserialize<Ticker>(response.Content);
+            
+            var tickerJson =  JsonSerializer.Deserialize<JsonElement>(response.Content);
+            
+            var ticker = new Ticker
+            {
+                Pair = pair,
+                Bid = tickerJson[0].GetDecimal(),
+                BidSize = tickerJson[1].GetDecimal(),
+                Ask = tickerJson[2].GetDecimal(),
+                AskSize = tickerJson[3].GetDecimal(),
+                DailyChange = tickerJson[4].GetDecimal(),
+                DailyChangeRelative = tickerJson[5].GetDecimal(),
+                LastPrice = tickerJson[6].GetDecimal(),
+                Volume = tickerJson[7].GetDecimal(),
+                High = tickerJson[8].GetDecimal(),
+                Low = tickerJson[9].GetDecimal()
+            };
+
+            return ticker;
         }
 
         public event Action<Trade> NewBuyTrade
