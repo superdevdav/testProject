@@ -28,7 +28,7 @@ namespace ConnectorTests
         }
 
         [Fact]
-        public async Task GetTickerAsync()
+        public async Task GetTickerAsync_ShouldReturnTicker()
         {
             var client = new ConnectorRestClient();
             var ticker = await client.GetTickerAsync("BTCUSD");
