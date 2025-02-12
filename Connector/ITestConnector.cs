@@ -12,6 +12,9 @@ namespace Connector
 
         Task<IEnumerable<Trade>> GetNewTradesAsync(string pair, int maxCount);
         Task<IEnumerable<Candle>> GetCandleSeriesAsync(string pair, int periodInSec, DateTimeOffset? from, DateTimeOffset? to = null, long? count = 0);
+        
+        // Добавил сигнатуру метода по получения тикера, т.к. нам необходимо реализовать в коннекторе получение тикера
+        Task<Ticker> GetTickerAsync(string pair);
 
         #endregion
 
