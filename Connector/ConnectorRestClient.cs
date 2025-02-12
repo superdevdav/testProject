@@ -45,12 +45,28 @@ namespace Connector
             long? count = 0
             )
         {
-            var options = new RestClientOptions($"https://api-pub.bitfinex.com/v2/candles/trade%3A1m%3At{pair}/hist");
+            var period = $"{periodInSec / 60}m";
+
+            var options = new RestClientOptions($"https://api-pub.bitfinex.com/v2/candles/trade%3A{period}%3At{pair}/hist");
             var client = new RestClient(options);
             var request = new RestRequest("");
             request.AddHeader("accept", "application/json");
             var response = await client.GetAsync(request);
-            return JsonSerializer.Deserialize<IEnumerable<Candle>>(response.Content);
+            var candlesArray = JsonSerializer.Deserialize<List<List<JsonElement>>>(response.Content);
+
+            IEnumerable<Candle> result = candlesArray.Select(c => new Candle
+            {
+                Pair = pair,
+                OpenPrice = c[1].GetDecimal(),
+                ClosePrice = c[2].GetDecimal(),
+                HighPrice = c[3].GetDecimal(),
+                LowPrice = c[4].GetDecimal(),
+                TotalVolume = c[5].GetDecimal(),
+                TotalPrice = c[2].GetDecimal() * c[5].GetDecimal(),
+                OpenTime = DateTimeOffset.FromUnixTimeMilliseconds(c[0].GetInt64())
+            }).ToList();
+
+            return result;
         }
 
         public async Task<Ticker> GetTickerAsync(string pair)
