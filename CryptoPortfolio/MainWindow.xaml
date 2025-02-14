@@ -1,0 +1,17 @@
+﻿<Window x:Class="CryptoPortfolio.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Crypto Portfolio" Height="229" Width="394">
+    <Grid>
+        <DataGrid ItemsSource="{Binding Balances}" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Валюта" Binding="{Binding Currency}" />
+                <DataGridTextColumn Header="BTC" Binding="{Binding InBTC}" />
+                <DataGridTextColumn Header="XRP" Binding="{Binding InXRP}" />
+                <DataGridTextColumn Header="XMR" Binding="{Binding InXMR}" />
+                <DataGridTextColumn Header="DASH" Binding="{Binding InDASH}" />
+                <DataGridTextColumn Header="USDT" Binding="{Binding InUSDT}" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>
