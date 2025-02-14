@@ -12,10 +12,17 @@ namespace Connector
 {
     public class ConnectorRestClient : ITestConnector
     {
-        public async Task<IEnumerable<Trade>> GetNewTradesAsync(
-            string pair,
-            int maxCount
-            )
+        public ConnectorRestClient() { }
+
+        #region Rest
+
+        /// <summary>
+        /// Получение трейдов
+        /// </summary>
+        /// <param name="pair">Валютная пара</param>
+        /// <param name="maxCount">Максимальное количество трейдов</param>
+        /// <returns></returns>
+        public async Task<IEnumerable<Trade>> GetNewTradesAsync(string pair, int maxCount)
         {
             var options = new RestClientOptions($"https://api-pub.bitfinex.com/v2/trades/t{pair}/hist?limit={maxCount}&sort=-1");
             var client = new RestClient(options);
@@ -37,6 +44,15 @@ namespace Connector
             return result;
         }
 
+        /// <summary>
+        /// Получение свечей
+        /// </summary>
+        /// <param name="pair">Валютная пара</param>
+        /// <param name="periodInSec">Таймфрейм в секундах</param>
+        /// <param name="from">Начальная дата</param>
+        /// <param name="to">Конечная дата</param>
+        /// <param name="count">Количество свечей</param>
+        /// <returns></returns>
         public async Task<IEnumerable<Candle>> GetCandleSeriesAsync(
             string pair,
             int periodInSec,
@@ -69,6 +85,11 @@ namespace Connector
             return result;
         }
 
+        /// <summary>
+        /// Получение информации о тикере
+        /// </summary>
+        /// <param name="pair">Валютная пара</param>
+        /// <returns></returns>
         public async Task<Ticker> GetTickerAsync(string pair)
         {
             var options = new RestClientOptions($"https://api-pub.bitfinex.com/v2/ticker/t{pair}");
@@ -96,6 +117,10 @@ namespace Connector
 
             return ticker;
         }
+
+        #endregion
+
+        #region Socket
 
         public event Action<Trade> NewBuyTrade
         {
@@ -151,5 +176,7 @@ namespace Connector
         public void UnsubscribeCandles(string pair)
         {
         }
+
+        #endregion
     }
 }
