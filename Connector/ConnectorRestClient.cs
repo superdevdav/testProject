@@ -29,7 +29,18 @@ namespace Connector
             var request = new RestRequest("");
             request.AddHeader("accept", "application/json");
             var response = await client.GetAsync(request);
+
+            if (response == null || string.IsNullOrWhiteSpace(response.Content))
+            {
+                throw new Exception("Ответ от сервера пустой или недоступен");
+            }
+
             var tradesArray = JsonSerializer.Deserialize<List<List<JsonElement>>>(response.Content);
+
+            if (tradesArray == null || tradesArray.Count == 0)
+            {
+                throw new Exception("Полученные данные о трейдах пусты или невалидны");
+            }
 
             IEnumerable<Trade> result = tradesArray.Select(t => new Trade
             {
@@ -68,7 +79,18 @@ namespace Connector
             var request = new RestRequest("");
             request.AddHeader("accept", "application/json");
             var response = await client.GetAsync(request);
+
+            if (response == null || string.IsNullOrWhiteSpace(response.Content))
+            {
+                throw new Exception("Ответ от сервера пустой или недоступен");
+            }
+
             var candlesArray = JsonSerializer.Deserialize<List<List<JsonElement>>>(response.Content);
+
+            if (candlesArray == null || candlesArray.Count == 0)
+            {
+                throw new Exception("Полученные данные о свечах пусты или невалидны");
+            }
 
             IEnumerable<Candle> result = candlesArray.Select(c => new Candle
             {
@@ -96,10 +118,16 @@ namespace Connector
             var client = new RestClient(options);
             var request = new RestRequest("");
             request.AddHeader("accept", "application/json");
+
             var response = await client.GetAsync(request);
-            
-            var tickerJson =  JsonSerializer.Deserialize<JsonElement>(response.Content);
-            
+
+            if (response == null || string.IsNullOrWhiteSpace(response.Content))
+            {
+                throw new Exception("Ответ от сервера пустой или недоступен");
+            }
+
+            var tickerJson = JsonSerializer.Deserialize<JsonElement>(response.Content);
+
             var ticker = new Ticker
             {
                 Pair = pair,

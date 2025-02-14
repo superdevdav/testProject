@@ -15,9 +15,9 @@ namespace Connector
         private readonly Dictionary<string, int> _tradeChannels = new();
         private readonly Dictionary<string, int> _candleChannels = new();
 
-        public event Action<Trade> NewBuyTrade;
-        public event Action<Trade> NewSellTrade;
-        public event Action<Candle> CandleSeriesProcessing;
+        public event Action<Trade>? NewBuyTrade;
+        public event Action<Trade>? NewSellTrade;
+        public event Action<Candle>? CandleSeriesProcessing;
 
         public ConnectorWebSocketClient()
         {
@@ -54,6 +54,11 @@ namespace Connector
                     var chanId = root.GetProperty("chanId").GetInt32();
                     var pair = root.GetProperty("symbol").GetString();
                     
+                    if (string.IsNullOrWhiteSpace(pair))
+                    {
+                        throw new Exception("Валютная пара пуста");
+                    }
+
                     if (channel == "trades")
                         _tradeChannels[pair] = chanId;
                     else if (channel == "candles")
